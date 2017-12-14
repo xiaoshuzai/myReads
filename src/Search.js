@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import escapeRegExp from 'escape-string-regexp'
-import EachBook from './EachBook.js'
+// import escapeRegExp from 'escape-string-regexp'
+import EachBook from './EachBook.js';
 
 class Search extends React.Component {
 
@@ -9,21 +9,24 @@ class Search extends React.Component {
     query: ''
   }
 
-  updataQuery = (query) => {
+  updataQuery = query => {
     this.setState({ query:query.trim() });
+    if (query.length > 0) {
+     this.props.onBookSearch(query);
+   }
   }
 
   render() {
 
-    let showingBooks;
-
-    if(this.state.query) {
-      const match = new RegExp(escapeRegExp(this.state.query),'i');
-      showingBooks = this.props.books.filter(
-        book => match.test(book.title) || match.test(book.authors));
-    } else {
-      showingBooks = this.props.books;
-    }
+    // let showingBooks;
+    //
+    // if(this.state.query) {
+    //   const match = new RegExp(escapeRegExp(this.state.query),'i');
+    //   showingBooks = this.props.books.filter(
+    //     book => match.test(book.title) || match.test(book.authors));
+    // } else {
+    //   showingBooks = this.props.books;
+    // }
 
     return (
       <div className="search-books">
@@ -43,7 +46,7 @@ class Search extends React.Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {showingBooks.map( book =>
+            {this.props.books.map( book =>
               <EachBook onShelfUpdate={this.props.onShelfUpdate} key={book.id} book={book} />
             )}
           </ol>

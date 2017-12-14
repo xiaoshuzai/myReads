@@ -38,6 +38,35 @@ class BooksApp extends React.Component {
     }
 }
 
+onBookSearch = query => {
+  BooksAPI.search(query).then( books => {
+    let searchBooks = books.map( book => {
+      let exist = false;
+      let searchBook = {};
+      /*循环遍历一次，如果找到了一致的 id ，说明这本书存在了*/
+      for (let i = 0; i < this.state.books.length; i++) {
+        if (this.state.books[i].id === book.id) {
+          exist = true;
+          searchBook = this.state.books[i];
+        }
+      }
+      if (exist) {
+        /*存在就按书架也的设定，shelf在哪就在哪*/
+        return searchBook;
+      } else {
+        /*不存在就说明 shelf 是 none ，还没决定放哪儿*/
+        book.shelf = 'none';
+        return book;
+      }
+    });
+    this.setState({ searchBooks });
+  })
+  .catch(() => {
+    /*如果获取失败了，就让这个 searchBooks 保持原样（相当于空白），不然后边程序报错，因为此程序获取不到数据*/
+    this.setState({ searchBooks: [] });
+  });
+}
+
   render() {
     // console.log(JSON.stringify(this.state.books));
     /*看这个数据看得我差点眼睛都要老花...
@@ -59,8 +88,9 @@ class BooksApp extends React.Component {
         />
         <Route path="/search" render={() => (
           <Search
-            books={this.state.books}
+            books={this.state.searchBooks}
             onShelfUpdate={this.onShelfUpdate}
+            onBookSearch={this.onBookSearch}
           />
         )}
         />
